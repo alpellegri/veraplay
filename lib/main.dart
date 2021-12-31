@@ -41,39 +41,42 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: const Center(
-        child: Text('My Page!'),
-      ),
-      drawer: Drawer(
-        // Add a ListView to the drawer. This ensures the user can scroll
-        // through the options in the drawer if there isn't enough vertical
-        // space to fit everything.
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text('Games'),
-            ),
-            ListTile(
-              title: const Text('Paint'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.of(context).pushNamed(PaintPage.routeName);
-              },
-            ),
-            ListTile(
-              title: const Text('Ball'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.of(context).pushNamed(BallPage.routeName);
-              },
-            ),
-          ],
-        ),
+      body: GridView(
+        gridDelegate:
+            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+        // primary: false,
+        padding: const EdgeInsets.all(4.0),
+        physics: const BouncingScrollPhysics(),
+        children: [
+          InkWell(
+            child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                color: Colors.blue.shade200,
+                child: const Center(
+                  child: Text('Paint'),
+                )),
+            onTap: () {
+              // Navigator.pop(context);
+              Navigator.of(context).pushNamed(PaintPage.routeName);
+            },
+          ),
+          InkWell(
+            child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                color: Colors.blue.shade200,
+                child: const Center(
+                  child: Text('Ball'),
+                )),
+            onTap: () {
+              // Navigator.pop(context);
+              Navigator.of(context).pushNamed(BallPage.routeName);
+            },
+          ),
+        ],
       ),
     );
   }
