@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock/wakelock.dart';
-import 'paint.dart';
-import 'ball.dart';
+import 'pages/paint.dart';
+import 'pages/ball.dart';
+import 'widgets/gamecard.dart';
 
 void main() => runApp(const MyApp());
 
@@ -42,35 +43,24 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: GridView(
-        gridDelegate:
-            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          crossAxisCount: 3,
+        ),
         // primary: false,
-        padding: const EdgeInsets.all(4.0),
+        padding: const EdgeInsets.all(8.0),
         physics: const BouncingScrollPhysics(),
         children: [
           InkWell(
-            child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                color: Colors.blue.shade200,
-                child: const Center(
-                  child: Text('Paint'),
-                )),
+            child: GameCardWidget('Paint', 'Paint'),
             onTap: () {
               // Navigator.pop(context);
               Navigator.of(context).pushNamed(PaintPage.routeName);
             },
           ),
           InkWell(
-            child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                color: Colors.blue.shade200,
-                child: const Center(
-                  child: Text('Ball'),
-                )),
+            child: GameCardWidget('Ball', 'Ball'),
             onTap: () {
               // Navigator.pop(context);
               Navigator.of(context).pushNamed(BallPage.routeName);
