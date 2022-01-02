@@ -41,6 +41,7 @@ dev_dependencies:
   sensors_plus:
   wakelock:
   vector_math:
+  shared_preferences:
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

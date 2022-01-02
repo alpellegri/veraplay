@@ -8,9 +8,8 @@ import 'widgets/gamecard.dart';
 void main() => runApp(const MyApp());
 
 Map<String, WidgetBuilder> menuRoutes = <String, WidgetBuilder>{
-  PaintPage.routeName: (BuildContext context) =>
-      const PaintPage(title: 'Paint'),
-  BallPage.routeName: (BuildContext context) => const BallPage(title: 'Ball'),
+  PaintPage.routeName: (BuildContext context) => PaintPage(title: 'Paint'),
+  BallPage.routeName: (BuildContext context) => BallPage(title: 'Ball'),
 };
 
 class MyApp extends StatelessWidget {
@@ -53,14 +52,14 @@ class MyHomePage extends StatelessWidget {
         physics: const BouncingScrollPhysics(),
         children: [
           InkWell(
-            child: GameCardWidget('Paint', 'Paint'),
+            child: GameCardWidget('Paint', 'Paint', ''),
             onTap: () {
               // Navigator.pop(context);
               Navigator.of(context).pushNamed(PaintPage.routeName);
             },
           ),
           InkWell(
-            child: GameCardWidget('Ball', 'Ball'),
+            child: GameCardWidget('Ball', 'Ball', ''),
             onTap: () {
               // Navigator.pop(context);
               Navigator.of(context).pushNamed(BallPage.routeName);

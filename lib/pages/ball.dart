@@ -9,7 +9,7 @@ const kFriction = -.01;
 const kAttraction = 0.5;
 
 class BallPage extends StatefulWidget {
-  const BallPage({Key? key, required this.title}) : super(key: key);
+  BallPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
   static const String routeName = '/ballpage';
@@ -70,7 +70,6 @@ class _BallPageState extends State<BallPage> {
     if (attractor != null) {
       final dva = vec.Vector2.copy(attractor!);
       dva.sub(_x);
-      // dva.normalize();
       dva.scale(dt * attraction);
       _v.add(dva);
     }
@@ -115,7 +114,7 @@ class _BallPageState extends State<BallPage> {
           children: <Widget>[
             FloatingActionButton(
               heroTag: "ball-btn1",
-              backgroundColor: Colors.indigo,
+              backgroundColor: Theme.of(context).primaryColor,
               child: const Icon(Icons.delete_outline),
               onPressed: () {
                 setState(() {
@@ -163,8 +162,6 @@ class _BallPageState extends State<BallPage> {
           details.globalPosition.dx - (MediaQuery.of(context).size.width / 2),
           (MediaQuery.of(context).size.height / 2) - details.globalPosition.dy);
     });
-
-    print(attractor);
   }
 
   void _onDragEndHandler(DragEndDetails details) {
@@ -180,12 +177,18 @@ class MyPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    const pointMode = ui.PointMode.polygon;
-    final paint = Paint()
-      ..color = Colors.green
+    Paint paint = Paint()
+      ..color = Colors.grey
       ..strokeWidth = 8
       ..strokeCap = StrokeCap.round;
-    canvas.drawPoints(pointMode, points, paint);
+    canvas.drawPoints(ui.PointMode.polygon, points, paint);
+    List<Offset> last = [];
+    last.add(points.last);
+    paint = Paint()
+      ..color = Colors.red
+      ..strokeWidth = 8
+      ..strokeCap = StrokeCap.round;
+    canvas.drawPoints(ui.PointMode.points, last, paint);
   }
 
   @override

@@ -3,32 +3,34 @@ import 'package:flutter/material.dart';
 class GameCardWidget extends StatelessWidget {
   final String name;
   final String description;
+  final String count;
+  static const double kRound = 8;
 
-  GameCardWidget(this.name, this.description);
+  GameCardWidget(this.name, this.description, this.count);
 
   @override
   Widget build(BuildContext context) {
     return Container(
         // alignment: Alignment.center,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(kRound),
           color: Theme.of(context).primaryColorLight,
         ),
         child: Stack(
           children: <Widget>[
             Container(
               // alignment: Alignment.centerLeft,
-              width: 4,
+              width: kRound,
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(8),
-                    bottomLeft: Radius.circular(8)),
+                    topLeft: Radius.circular(kRound),
+                    bottomLeft: Radius.circular(kRound)),
                 color: Theme.of(context).primaryColor,
               ),
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: (8.0 + kRound), vertical: 8.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -56,8 +58,8 @@ class GameCardWidget extends StatelessWidget {
                             ),
                           ],
                         )),
-                        const Text(
-                          '',
+                        Text(
+                          count,
                           textAlign: TextAlign.right,
                         ),
                       ],

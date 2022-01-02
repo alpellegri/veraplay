@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
+import 'package:shared_preferences/shared_preferences.dart';
 
 const kPoints = 600;
 
@@ -41,7 +42,7 @@ class _PaintPageState extends State<PaintPage> {
           children: <Widget>[
             FloatingActionButton(
               heroTag: "paint-btn1",
-              backgroundColor: Colors.indigo,
+              backgroundColor: Theme.of(context).primaryColor,
               child: const Icon(Icons.delete_outline),
               onPressed: () {
                 setState(() {
@@ -52,7 +53,7 @@ class _PaintPageState extends State<PaintPage> {
             ),
             FloatingActionButton(
               heroTag: "paint-btn2",
-              backgroundColor: Colors.indigo,
+              backgroundColor: Theme.of(context).primaryColor,
               child: const Icon(Icons.undo),
               onPressed: () {
                 setState(() {
