@@ -9,7 +9,7 @@ const kFriction = -.01;
 const kAttraction = 0.5;
 
 class BallPage extends StatefulWidget {
-  BallPage({Key? key, required this.title}) : super(key: key);
+  const BallPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
   static const String routeName = '/ballpage';

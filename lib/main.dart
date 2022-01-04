@@ -3,13 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:wakelock/wakelock.dart';
 import 'pages/paint.dart';
 import 'pages/ball.dart';
+import 'pages/speech.dart';
 import 'widgets/gamecard.dart';
 
 void main() => runApp(const MyApp());
 
 Map<String, WidgetBuilder> menuRoutes = <String, WidgetBuilder>{
-  PaintPage.routeName: (BuildContext context) => PaintPage(title: 'Paint'),
-  BallPage.routeName: (BuildContext context) => BallPage(title: 'Ball'),
+  PaintPage.routeName: (BuildContext context) =>
+      const PaintPage(title: 'Paint'),
+  BallPage.routeName: (BuildContext context) => const BallPage(title: 'Ball'),
+  SpeechPage.routeName: (BuildContext context) =>
+      const SpeechPage(title: 'Speech'),
 };
 
 class MyApp extends StatelessWidget {
@@ -54,15 +58,19 @@ class MyHomePage extends StatelessWidget {
           InkWell(
             child: GameCardWidget('Paint', 'Paint', ''),
             onTap: () {
-              // Navigator.pop(context);
               Navigator.of(context).pushNamed(PaintPage.routeName);
             },
           ),
           InkWell(
             child: GameCardWidget('Ball', 'Ball', ''),
             onTap: () {
-              // Navigator.pop(context);
               Navigator.of(context).pushNamed(BallPage.routeName);
+            },
+          ),
+          InkWell(
+            child: GameCardWidget('Speech', 'Speech', ''),
+            onTap: () {
+              Navigator.of(context).pushNamed(SpeechPage.routeName);
             },
           ),
         ],
