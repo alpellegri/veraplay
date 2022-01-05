@@ -1,6 +1,47 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:http/http.dart' as http;
+import 'package:translator/translator.dart';
+
+const String kAccessKey = 'FEGjbJwHsT1y6Kzx0P3Ux_7rU_TKshCq45bMFWR--YU';
+
+Future<String> fetchUrl(String value) async {
+  // print('fetchUrl-----');
+
+  final translator = GoogleTranslator();
+  final translation = await translator.translate(value, from: 'it', to: 'en');
+
+  Map<String, dynamic> json;
+
+  String path = 'https://api.unsplash.com/search/photos';
+  path += '?page=1&per_page=20&query=$translation';
+  path += '&client_id=$kAccessKey';
+
+  // print(path);
+  final response = await http.get(Uri.parse(path));
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    // print(response.body);
+    json = jsonDecode(response.body);
+
+    final List<dynamic> results = json['results'];
+    // print(results.length);
+    final random = Random().nextInt(results.length);
+    final result = results[random]['urls']['small'];
+    // print(result);
+    return result;
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load album');
+  }
+}
 
 class SpeechPage extends StatefulWidget {
   const SpeechPage({Key? key, required this.title}) : super(key: key);
@@ -16,6 +57,7 @@ class _SpeechPageState extends State<SpeechPage> {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   String _lastWords = '';
+  String _lastUrlImage = '';
 
   @override
   void initState() {
@@ -47,13 +89,20 @@ class _SpeechPageState extends State<SpeechPage> {
   /// This is the callback that the SpeechToText plugin calls when
   /// the platform returns recognized words.
   void _onSpeechResult(SpeechRecognitionResult result) {
-    setState(() {
-      _lastWords = result.recognizedWords;
-    });
+    if (result.finalResult == true) {
+      print('_onSpeechResult: ${result.finalResult}');
+      fetchUrl(result.recognizedWords).then((String value) {
+        setState(() {
+          _lastWords = result.recognizedWords;
+          _lastUrlImage = value;
+        });
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // print('build---');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Speech Demo'),
@@ -62,6 +111,14 @@ class _SpeechPageState extends State<SpeechPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            /*Text(
+              _lastUrlImage,
+              style: const TextStyle(fontSize: 8.0),
+            ),*/
+            (_lastUrlImage == '')
+                ? const Text('')
+                : Image.network(_lastUrlImage),
+            /*
             Container(
               padding: const EdgeInsets.all(16),
               child: const Text(
@@ -76,23 +133,23 @@ class _SpeechPageState extends State<SpeechPage> {
                   // If listening is active show the recognized words
                   _speechToText.isListening
                       ? '$_lastWords'
-                  // If listening isn't active but could be tell the user
-                  // how to start it, otherwise indicate that speech
-                  // recognition is not yet ready or not supported on
-                  // the target device
+                      // If listening isn't active but could be tell the user
+                      // how to start it, otherwise indicate that speech
+                      // recognition is not yet ready or not supported on
+                      // the target device
                       : _speechEnabled
-                      ? 'Tap the microphone to start listening...'
-                      : 'Speech not available',
+                          ? 'Tap the microphone to start listening...'
+                          : 'Speech not available',
                 ),
               ),
-            ),
+            ),*/
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed:
-        // If not yet listening for speech start, otherwise stop
-        _speechToText.isNotListening ? _startListening : _stopListening,
+            // If not yet listening for speech start, otherwise stop
+            _speechToText.isNotListening ? _startListening : _stopListening,
         tooltip: 'Listen',
         child: Icon(_speechToText.isNotListening ? Icons.mic_off : Icons.mic),
       ),
