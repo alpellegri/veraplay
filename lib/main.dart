@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock/wakelock.dart';
-import 'pages/paint.dart';
-import 'pages/ball.dart';
-import 'pages/speech.dart';
+import 'games/paint/paint.dart';
+import 'games/ball/ball.dart';
+import 'games/speech/speech.dart';
 import 'widgets/gamecard.dart';
 
 void main() => runApp(const MyApp());
