@@ -13,8 +13,8 @@ class DrawxyPage extends StatefulWidget {
 }
 
 class _DrawxyPageState extends State<DrawxyPage> {
-  double ax = 0;
-  double ay = 0;
+  double ax = 1;
+  double ay = 1;
   double bx = 0;
   double by = 0;
 
@@ -38,7 +38,7 @@ class _DrawxyPageState extends State<DrawxyPage> {
     double tx = (2 * pi + bx * pi) / ax;
     double ty = (2 * pi + by * pi) / ay;
     double tm = max(tx, ty);
-    for (double t = 0; t < tm; t += tm/128) {
+    for (double t = 0; t <= tm; t += tm/128) {
       double x = sin(ax * t + bx * pi);
       double y = sin(ay * t + by * pi);
 
