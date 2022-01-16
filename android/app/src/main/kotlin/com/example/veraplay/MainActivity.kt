@@ -10,6 +10,7 @@ import android.util.Log
 import java.util.Timer
 import java.util.TimerTask
 class MainActivity: FlutterActivity() {
+/*
     private val CHANNEL = "flutter.native/helper"
     var serviceRunning = false
     var tone = ToneGenerator()
@@ -49,7 +50,7 @@ class MainActivity: FlutterActivity() {
 
     private fun frequency(call: MethodCall, result: MethodChannel.Result) {
         var f = call.argument<Int>("frequency")
-        Log.v("TAG", "frequency: " + f.toString())
+        // Log.v("TAG", "frequency: " + f.toString())
         if (f != null) {
             f = tone.setFrequency(f)
         }
@@ -77,4 +78,5 @@ class MainActivity: FlutterActivity() {
         serviceRunning = false
         result.success("stop")
     }
+*/
 }

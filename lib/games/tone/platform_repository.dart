@@ -19,7 +19,7 @@ class PlatformRepository {
       final String result = await platform.invokeMethod('frequency', {
         'frequency': f,
       });
-      print('RESULT -> $result');
+      // print('RESULT -> $result');
     } on PlatformException catch (e) {
       print(e);
     }

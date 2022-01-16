@@ -18,6 +18,7 @@ class ToneGenerator {
         Fs, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT)
     var frequency: Int = 440
     val frame_out: ShortArray = ShortArray(buffLength)
+    // val frame_out: ShortArray = ShortArray(1024)
     var phase: Double = 0.0
 
     fun initTrack() {
@@ -32,7 +33,7 @@ class ToneGenerator {
     }
 
     fun setFrequency(f: Int) : Int {
-        Log.v("TAG", "setFrequency: " + f.toString())
+        // Log.v("TAG", "setFrequency: " + f.toString())
         frequency = f
         return 0
     }
@@ -42,11 +43,11 @@ class ToneGenerator {
         val amplitude: Int = 32767
         val k: Double = 2*PI*frequency/Fs
         if (isPlaying) {
-            for (i in 0 until buffLength) {
+            for (i in 0 until frame_out.size) {
                 phase += k
                 frame_out[i] = (amplitude * Math.sin(phase)).toInt().toShort()
             }
-            Track.write(frame_out, 0, buffLength)
+            Track.write(frame_out, 0, frame_out.size)
         }
     }
 
