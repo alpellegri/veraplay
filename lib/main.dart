@@ -6,6 +6,7 @@ import 'games/ball/ball.dart';
 import 'games/speech/speech.dart';
 import 'games/tone/tone.dart';
 import 'games/drawxy/drawxy.dart';
+import 'games/psyco/psyco.dart';
 import 'widgets/gamecard.dart';
 
 void main() => runApp(const MyApp());
@@ -19,6 +20,7 @@ Map<String, WidgetBuilder> menuRoutes = <String, WidgetBuilder>{
   TonePage.routeName: (BuildContext context) => const TonePage(title: 'Tone'),
   DrawxyPage.routeName: (BuildContext context) =>
       const DrawxyPage(title: 'Drawxy'),
+  PsycoPage.routeName: (BuildContext context) => const PsycoPage(title: 'Psyco'),
 };
 
 class MyApp extends StatelessWidget {
@@ -88,6 +90,12 @@ class MyHomePage extends StatelessWidget {
             child: GameCardWidget('Drawxy', 'Drawxy', ''),
             onTap: () {
               Navigator.of(context).pushNamed(DrawxyPage.routeName);
+            },
+          ),
+          InkWell(
+            child: GameCardWidget('Psyco', 'Psyco', ''),
+            onTap: () {
+              Navigator.of(context).pushNamed(PsycoPage.routeName);
             },
           ),
         ],

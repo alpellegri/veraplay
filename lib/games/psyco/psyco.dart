@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:ui' as ui;
 import 'package:vector_math/vector_math.dart' as vec;
 
@@ -8,21 +7,19 @@ const kPoints = 50;
 const kFriction = -.01;
 const kAttraction = 0.5;
 
-class BallPage extends StatefulWidget {
-  const BallPage({Key? key, required this.title}) : super(key: key);
+class PsycoPage extends StatefulWidget {
+  const PsycoPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
-  static const String routeName = '/ballpage';
+  static const String routeName = '/psycopage';
 
   @override
-  _BallPageState createState() => _BallPageState();
+  _PsycoPageState createState() => _PsycoPageState();
 }
 
-class _BallPageState extends State<BallPage> {
+class _PsycoPageState extends State<PsycoPage> {
   late final List<Offset> _points = [];
 
-  vec.Vector2? _acceleration;
-  late StreamSubscription<AccelerometerEvent> _streamSubscription;
   late Timer _timer;
   int _last = DateTime.now().millisecondsSinceEpoch;
 
@@ -37,13 +34,6 @@ class _BallPageState extends State<BallPage> {
   void initState() {
     super.initState();
 
-    _streamSubscription =
-        accelerometerEvents.listen((AccelerometerEvent event) {
-      setState(() {
-        _acceleration = vec.Vector2(event.x, event.y);
-      });
-    });
-
     _timer = Timer.periodic(const Duration(milliseconds: 25), (_) {
       setState(() {});
     });
@@ -52,7 +42,6 @@ class _BallPageState extends State<BallPage> {
   @override
   void dispose() {
     super.dispose();
-    _streamSubscription.cancel();
     _timer.cancel();
   }
 
@@ -62,11 +51,6 @@ class _BallPageState extends State<BallPage> {
     double dt = .01 * (current.toDouble() - _last.toDouble());
     _last = current;
 
-    if (_acceleration != null) {
-      final dvg = vec.Vector2.copy(_acceleration!);
-      dvg.scale(-dt);
-      _v.add(dvg);
-    }
     if (attractor != null) {
       final dva = vec.Vector2.copy(attractor!);
       dva.sub(_x);
@@ -177,16 +161,11 @@ class MyPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
-      ..color = Colors.grey
-      ..strokeWidth = 16
-      ..strokeCap = StrokeCap.round;
-    canvas.drawPoints(ui.PointMode.polygon, points, paint);
     List<Offset> last = [];
     last.add(points.last);
-    paint = Paint()
+    Paint paint = Paint()
       ..color = Colors.red
-      ..strokeWidth = 15
+      ..strokeWidth = 64
       ..strokeCap = StrokeCap.round;
     canvas.drawPoints(ui.PointMode.points, last, paint);
   }
