@@ -2,10 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:vector_math/vector_math.dart' as vec;
+import 'package:time/time.dart';
+import 'dart:math';
 
-const kPoints = 50;
-const kFriction = -.01;
-const kAttraction = 0.5;
+const kFriction = -.002;
+const kAttraction = -500.0;
 
 class PsycoPage extends StatefulWidget {
   const PsycoPage({Key? key, required this.title}) : super(key: key);
@@ -18,14 +19,18 @@ class PsycoPage extends StatefulWidget {
 }
 
 class _PsycoPageState extends State<PsycoPage> {
-  late final List<Offset> _points = [];
-
   late Timer _timer;
   int _last = DateTime.now().millisecondsSinceEpoch;
+  int _hit = 0;
+  int _good = 0;
 
   final vec.Vector2 _x = vec.Vector2(0.0, 0.0);
   final vec.Vector2 _v = vec.Vector2(0.0, 0.0);
-  Offset point = const Offset(0, 0);
+  Offset ball = const Offset(0, 0);
+  Offset touch = const Offset(0, 0);
+  DateTime touchTime = DateTime.now() - 10.minutes;
+  int toDraw = 0;
+  int isTouched = 0;
 
   vec.Vector2? attractor;
   double attraction = 0;
@@ -34,7 +39,7 @@ class _PsycoPageState extends State<PsycoPage> {
   void initState() {
     super.initState();
 
-    _timer = Timer.periodic(const Duration(milliseconds: 25), (_) {
+    _timer = Timer.periodic(const Duration(milliseconds: 10), (_) {
       setState(() {});
     });
   }
@@ -54,7 +59,9 @@ class _PsycoPageState extends State<PsycoPage> {
     if (attractor != null) {
       final dva = vec.Vector2.copy(attractor!);
       dva.sub(_x);
-      dva.scale(dt * attraction);
+      double fact = 1 / (dva.normalize() * dva.normalize() * dva.normalize());
+      dva.normalized();
+      dva.scale(dt * fact * attraction);
       _v.add(dva);
     }
     final dvt = vec.Vector2.copy(_v);
@@ -64,6 +71,7 @@ class _PsycoPageState extends State<PsycoPage> {
     dx.scale(dt);
     _x.add(dx);
 
+    /* borders */
     final __x = vec.Vector2.copy(_x);
     __x.clamp(
         vec.Vector2(-MediaQuery.of(context).size.width / 2,
@@ -71,6 +79,7 @@ class _PsycoPageState extends State<PsycoPage> {
         vec.Vector2(MediaQuery.of(context).size.width / 2,
             MediaQuery.of(context).size.height / 2));
 
+    /* rebound */
     for (var i = 0; i < 2; i++) {
       if (_x.storage[i] != __x.storage[i]) {
         _v.storage[i] *= -1;
@@ -78,13 +87,33 @@ class _PsycoPageState extends State<PsycoPage> {
       }
     }
 
-    point = Offset(MediaQuery.of(context).size.width / 2 + _x[0],
+    ball = Offset(MediaQuery.of(context).size.width / 2 + _x[0],
         MediaQuery.of(context).size.height / 2 - _x[1]);
-    _points.add(point);
 
-    if (_points.length > kPoints) {
-      _points.removeRange(0, (_points.length - kPoints));
+    final now = DateTime.now();
+    final dtime = now.difference(touchTime);
+
+    if ((dtime.inMilliseconds > 200) && (dtime.inMilliseconds < 800)) {
+      toDraw = 1;
+    } else {
+      toDraw = 0;
+      isTouched = 0;
     }
+
+    if ((dtime.inMilliseconds > 200) && (dtime.inMilliseconds < 250)) {
+      if ((ball - touch).distance < 32.0) {
+        _x.setZero();
+        _good++;
+        isTouched = 1;
+        _restart();
+      } else {
+        // isTouched = 0;
+      }
+    } else {
+      // isTouched = 0;
+    }
+
+    attraction = 0;
 
     return Scaffold(
       // appBar: AppBar(
@@ -102,12 +131,16 @@ class _PsycoPageState extends State<PsycoPage> {
               child: const Icon(Icons.delete_outline),
               onPressed: () {
                 setState(() {
-                  _points.clear();
                   _x.setZero();
                   _v.setZero();
+                  _hit = 0;
+                  _good = 0;
+                  _restart();
                 });
               },
             ),
+            Text('$_good'),
+            Text('${_hit - _good}'),
           ],
         ),
       ),
@@ -122,7 +155,7 @@ class _PsycoPageState extends State<PsycoPage> {
             child: CustomPaint(
               size: Size(MediaQuery.of(context).size.width,
                   MediaQuery.of(context).size.height),
-              painter: MyPainter(_points),
+              painter: MyPainter(ball, touch, toDraw, isTouched),
             ),
           ),
         ),
@@ -130,8 +163,17 @@ class _PsycoPageState extends State<PsycoPage> {
     );
   }
 
+  void _restart() {
+    Random random = Random();
+    _v.storage[0] = 500 * (random.nextDouble() - 0.5);
+    _v.storage[1] = 500 * (random.nextDouble() - 0.5);
+  }
   void _onDragStartHandler(DragStartDetails details) {
     setState(() {
+      isTouched = 0;
+      _hit++;
+      touchTime = DateTime.now();
+      touch = details.globalPosition;
       attraction = kAttraction;
       attractor = vec.Vector2(
           details.globalPosition.dx - (MediaQuery.of(context).size.width / 2),
@@ -139,14 +181,7 @@ class _PsycoPageState extends State<PsycoPage> {
     });
   }
 
-  void _onDragUpdateHandler(DragUpdateDetails details) {
-    setState(() {
-      attraction = kAttraction;
-      attractor = vec.Vector2(
-          details.globalPosition.dx - (MediaQuery.of(context).size.width / 2),
-          (MediaQuery.of(context).size.height / 2) - details.globalPosition.dy);
-    });
-  }
+  void _onDragUpdateHandler(DragUpdateDetails details) {}
 
   void _onDragEndHandler(DragEndDetails details) {
     setState(() {
@@ -156,18 +191,34 @@ class _PsycoPageState extends State<PsycoPage> {
 }
 
 class MyPainter extends CustomPainter {
-  List<Offset> points;
-  MyPainter(this.points);
+  Offset ball;
+  Offset touch;
+  int toDraw;
+  int isTouched;
+  MyPainter(this.ball, this.touch, this.toDraw, this.isTouched);
 
   @override
   void paint(Canvas canvas, Size size) {
-    List<Offset> last = [];
-    last.add(points.last);
-    Paint paint = Paint()
+    Paint paint;
+    List<Offset> list = [];
+    list.add(ball);
+
+    Color color = (isTouched == 1) ? (Colors.green) : (Colors.grey);
+
+    if (toDraw == 1) {
+      List<Offset> list = [];
+      list.add(touch);
+      Paint paint = Paint()
+        ..color = color
+        ..strokeWidth = 64
+        ..strokeCap = StrokeCap.round;
+      canvas.drawPoints(ui.PointMode.points, list, paint);
+    }
+    paint = Paint()
       ..color = Colors.red
-      ..strokeWidth = 64
+      ..strokeWidth = 32
       ..strokeCap = StrokeCap.round;
-    canvas.drawPoints(ui.PointMode.points, last, paint);
+    canvas.drawPoints(ui.PointMode.points, list, paint);
   }
 
   @override
