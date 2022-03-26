@@ -6,7 +6,7 @@ import 'package:time/time.dart';
 import 'dart:math';
 
 const kFriction = -.002;
-const kAttraction = -500.0;
+const kAttraction = -100.0;
 
 class PsycoPage extends StatefulWidget {
   const PsycoPage({Key? key, required this.title}) : super(key: key);
@@ -23,6 +23,7 @@ class _PsycoPageState extends State<PsycoPage> {
   int _last = DateTime.now().millisecondsSinceEpoch;
   int _hit = 0;
   int _good = 0;
+  double _delay = 200;
 
   final vec.Vector2 _x = vec.Vector2(0.0, 0.0);
   final vec.Vector2 _v = vec.Vector2(0.0, 0.0);
@@ -56,6 +57,10 @@ class _PsycoPageState extends State<PsycoPage> {
     double dt = .01 * (current.toDouble() - _last.toDouble());
     _last = current;
 
+    double time = current.toDouble();
+    double delay = (sin(time / 10000) > 0) ? (_delay) : (0);
+
+    /*
     if (attractor != null) {
       final dva = vec.Vector2.copy(attractor!);
       dva.sub(_x);
@@ -63,7 +68,8 @@ class _PsycoPageState extends State<PsycoPage> {
       dva.normalized();
       dva.scale(dt * fact * attraction);
       _v.add(dva);
-    }
+    }*/
+
     final dvt = vec.Vector2.copy(_v);
     dvt.scale(kFriction);
     _v.add(dvt);
@@ -93,14 +99,15 @@ class _PsycoPageState extends State<PsycoPage> {
     final now = DateTime.now();
     final dtime = now.difference(touchTime);
 
-    if ((dtime.inMilliseconds > 200) && (dtime.inMilliseconds < 800)) {
+    if ((dtime.inMilliseconds > _delay) && (dtime.inMilliseconds < 500)) {
       toDraw = 1;
     } else {
       toDraw = 0;
       isTouched = 0;
     }
 
-    if ((dtime.inMilliseconds > 200) && (dtime.inMilliseconds < 250)) {
+    if ((dtime.inMilliseconds > _delay) &&
+        (dtime.inMilliseconds < (_delay + 50))) {
       if ((ball - touch).distance < 32.0) {
         _x.setZero();
         _good++;
@@ -131,14 +138,13 @@ class _PsycoPageState extends State<PsycoPage> {
               child: const Icon(Icons.delete_outline),
               onPressed: () {
                 setState(() {
-                  _x.setZero();
-                  _v.setZero();
                   _hit = 0;
                   _good = 0;
                   _restart();
                 });
               },
             ),
+            Text('delay: $delay'),
             Text('$_good'),
             Text('${_hit - _good}'),
           ],
@@ -164,10 +170,13 @@ class _PsycoPageState extends State<PsycoPage> {
   }
 
   void _restart() {
+    _x.storage[0] = 0;
+    _x.storage[1] = 200;
     Random random = Random();
-    _v.storage[0] = 500 * (random.nextDouble() - 0.5);
-    _v.storage[1] = 500 * (random.nextDouble() - 0.5);
+    _v.storage[0] = 0 * (random.nextDouble() - 0.5);
+    _v.storage[1] = 100 * (0 * random.nextDouble() - 1 * 0.5);
   }
+
   void _onDragStartHandler(DragStartDetails details) {
     setState(() {
       isTouched = 0;
